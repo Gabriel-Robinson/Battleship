@@ -16,7 +16,7 @@ public class Game {
         opponent = p2;
 
         gameOver = false;
-        
+
         input = new Scanner(System.in);
 
     }
@@ -39,15 +39,15 @@ public class Game {
 
         Board board = p.getBoard();
 
-        for (Ship s : fleet ) {
+        for (Ship s : fleet) {
             boolean placed = false;
-            while(!placed) {
+            while (!placed) {
                 int row = rand.nextInt(board.getRows());
                 int column = rand.nextInt(board.getColumns());
                 boolean horizontal = rand.nextBoolean();
                 Coordinate coord = new Coordinate(row, column);
 
-                if(horizontal) {
+                if (horizontal) {
                     placed = board.placeShip(coord, s, Direction.HORIZONTAL);
                 } else {
                     placed = board.placeShip(coord, s, Direction.VERTICAL);
@@ -61,19 +61,38 @@ public class Game {
         setUpPlayer(p1);
         setUpPlayer(p2);
 
-        while(!gameOver) {
-            System.out.println("Player 1's turn");
+        while (!gameOver) {
+            System.out.println(currentPlayer.getName() + " turn");
             currentPlayer.getBoard().printBoard();
             opponent.getBoard().printBoard();
 
-
-
+            boolean turnDone = false;
+            while (!turnDone) {
+                Coordinate c = readAttackCoordinate();
+                String result = opponent.getBoard().attack(c);
+                if (result.equals("This has already been attacked")) {
+                    System.out.println(result);
+                    continue;
+                }
+                System.out.println(result);
+                turnDone = true;
+            }
+            boolean sunk = opponent.getBoard().allShipsSunk();
+            if (sunk) {
+                System.out.println(currentPlayer.getName() + " Has won the game");
+                gameOver = true;
+            }
+            
+            if(!gameOver) {
+                switchTurns();
+            }
+            
 
         }
     }
 
     public void switchTurns() {
-        if(currentPlayer == p1) {
+        if (currentPlayer == p1) {
             currentPlayer = p2;
             opponent = p1;
         } else {
@@ -84,6 +103,45 @@ public class Game {
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    private Coordinate readAttackCoordinate() {
+        while (true) {
+            System.out.println("Please enter an attack coordinate. [A-J][0-9] ");
+            String coord = input.nextLine();
+            coord = coord.trim().toUpperCase().replace(" ", "");
+
+            if (coord.length() < 2) {
+                System.out.println("Invalid, Must be at least 2 characters. Please Re-enter");
+                continue;
+            }
+
+            char column = coord.charAt(0);
+
+            if (column < 'A' || column > 'J') {
+                System.out.println("Invalid, Column must be [A-J]");
+                continue;
+            }
+
+            int row;
+            try {
+                row = Integer.parseInt(coord.substring(1));
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid, Row must be [0-9]");
+                continue;
+            }
+
+            if (row < 0 || row > 9) {
+                System.out.println("Invalid, Row must be [0-9]");
+                continue;
+            }
+
+            int colIndex = column - 'A';
+            Coordinate coordinate = new Coordinate(row, colIndex);
+
+            return coordinate;
+
+        }
     }
 
 }

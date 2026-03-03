@@ -125,7 +125,9 @@ public class Board {
     public void printBoard() {
         System.out.print("  ");
         for (int c = 0; c < grid[0].length; c++) {
-            System.out.print(c + " ");
+            char letter = (char) ( 'A' + c);
+            System.out.print(letter + " ");
+
         }
         System.out.println();
         for (int i = 0; i < grid.length; i++) {

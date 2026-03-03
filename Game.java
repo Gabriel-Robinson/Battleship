@@ -63,7 +63,10 @@ public class Game {
 
         while (!gameOver) {
             System.out.println(currentPlayer.getName() + " turn");
+            System.out.println("Current Player board");
             currentPlayer.getBoard().printBoard();
+            System.out.println();
+            System.out.println("Opponent Player board");
             opponent.getBoard().printBoard();
 
             boolean turnDone = false;
@@ -82,7 +85,7 @@ public class Game {
                 System.out.println(currentPlayer.getName() + " Has won the game");
                 gameOver = true;
             }
-            
+
             if(!gameOver) {
                 switchTurns();
             }

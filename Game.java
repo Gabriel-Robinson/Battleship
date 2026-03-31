@@ -20,6 +20,7 @@ public class Game {
 
         gameOver = false;
     }
+    
 
     public Player getOpponent() {
         return opponent;
@@ -100,6 +101,24 @@ public class Game {
             
 
         }
+    }
+
+    public String playerAttack(Coordinate coord) {
+        String result = opponent.getBoard().attack(coord);
+        if(opponent.getBoard().allShipsSunk()) {
+            gameOver = true;
+        }
+
+        return result;
+    }
+
+    public String AiAttack(Coordinate coord) {
+        String result = currentPlayer.getBoard().attack(coord);
+        if(opponent.getBoard().allShipsSunk()) {
+            gameOver = true;
+        }
+
+        return result;
     }
 
     public void switchTurns() {

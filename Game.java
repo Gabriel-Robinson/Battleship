@@ -18,7 +18,6 @@ public class Game {
         gameOver = false;
 
         input = new Scanner(System.in);
-
     }
 
     public void setUpPlayer(Player p) {

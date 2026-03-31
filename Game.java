@@ -12,12 +12,21 @@ public class Game {
         p1 = new Player("Player 1");
         p2 = new Player("Player 2");
 
+        setUpPlayer(p1);
+        setUpPlayer(p2);
+
         currentPlayer = p1;
         opponent = p2;
 
         gameOver = false;
+    }
 
-        input = new Scanner(System.in);
+    public Player getOpponent() {
+        return opponent;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     public void setUpPlayer(Player p) {

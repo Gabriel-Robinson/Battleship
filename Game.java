@@ -6,7 +6,6 @@ public class Game {
     private Player currentPlayer;
     private Player opponent;
     private boolean gameOver;
-    private Scanner input;
 
     public Game() {
         p1 = new Player("Player 1");
@@ -20,7 +19,38 @@ public class Game {
 
         gameOver = false;
     }
-    
+
+    public TurnResult playTurn(Coordinate coord) {
+        // Player Attacks
+        String playerResult = opponent.getBoard().attack(coord);
+
+        if(playerResult.contains("already")) {
+            return new TurnResult(playerResult, "", false, -1, -1);
+        }
+
+        if(opponent.getBoard().allShipsSunk()) {
+            gameOver = true;
+            return new TurnResult(playerResult, "", true, -1, -1);
+        }
+
+        // Ai Attack
+        Random rand = new Random();
+        int row;
+        int col;
+        String aiResult;
+
+        do {
+            row = rand.nextInt(10);
+            col = rand.nextInt(10);
+            aiResult = currentPlayer.getBoard().attack(new Coordinate(row, col));
+        } while (aiResult.contains("already"));
+
+        if(currentPlayer.getBoard().allShipsSunk()) {
+            gameOver = true;
+        }
+
+        return new TurnResult(playerResult, aiResult, gameOver, row, col);
+    }
 
     public Player getOpponent() {
         return opponent;
@@ -66,61 +96,6 @@ public class Game {
         }
     }
 
-    public void play() {
-        setUpPlayer(p1);
-        setUpPlayer(p2);
-
-        while (!gameOver) {
-            System.out.println(currentPlayer.getName() + " turn");
-            System.out.println("Current Player board");
-            currentPlayer.getBoard().printBoard();
-            System.out.println();
-            System.out.println("Opponent Player board");
-            opponent.getBoard().printBoard();
-
-            boolean turnDone = false;
-            while (!turnDone) {
-                Coordinate c = readAttackCoordinate();
-                String result = opponent.getBoard().attack(c);
-                if (result.equals("This has already been attacked")) {
-                    System.out.println(result);
-                    continue;
-                }
-                System.out.println(result);
-                turnDone = true;
-            }
-            boolean sunk = opponent.getBoard().allShipsSunk();
-            if (sunk) {
-                System.out.println(currentPlayer.getName() + " Has won the game");
-                gameOver = true;
-            }
-
-            if(!gameOver) {
-                switchTurns();
-            }
-            
-
-        }
-    }
-
-    public String playerAttack(Coordinate coord) {
-        String result = opponent.getBoard().attack(coord);
-        if(opponent.getBoard().allShipsSunk()) {
-            gameOver = true;
-        }
-
-        return result;
-    }
-
-    public String AiAttack(Coordinate coord) {
-        String result = currentPlayer.getBoard().attack(coord);
-        if(opponent.getBoard().allShipsSunk()) {
-            gameOver = true;
-        }
-
-        return result;
-    }
-
     public void switchTurns() {
         if (currentPlayer == p1) {
             currentPlayer = p2;
@@ -135,43 +110,21 @@ public class Game {
         return gameOver;
     }
 
-    private Coordinate readAttackCoordinate() {
-        while (true) {
-            System.out.println("Please enter an attack coordinate. [A-J][0-9] ");
-            String coord = input.nextLine();
-            coord = coord.trim().toUpperCase().replace(" ", "");
+}
 
-            if (coord.length() < 2) {
-                System.out.println("Invalid, Must be at least 2 characters. Please Re-enter");
-                continue;
-            }
+class TurnResult {
+    public String playerResult;
+    public String aiResult;
+    public boolean gameOver;
+    public int aiRow;
+    public int aiCol;
 
-            char column = coord.charAt(0);
-
-            if (column < 'A' || column > 'J') {
-                System.out.println("Invalid, Column must be [A-J]");
-                continue;
-            }
-
-            int row;
-            try {
-                row = Integer.parseInt(coord.substring(1));
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid, Row must be [0-9]");
-                continue;
-            }
-
-            if (row < 0 || row > 9) {
-                System.out.println("Invalid, Row must be [0-9]");
-                continue;
-            }
-
-            int colIndex = column - 'A';
-            Coordinate coordinate = new Coordinate(row, colIndex);
-
-            return coordinate;
-
-        }
+    public TurnResult(String p, String a, boolean g, int r, int c) {
+        playerResult = p;
+        aiResult = a;
+        gameOver = g;
+        aiRow = r;
+        aiCol = c;
     }
 
 }
